@@ -1,60 +1,106 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
 
-<header class="hero-unit" id="banner">
+<!-- <header class="hero-unit" id="banner">
   <div class="container">
       <h1>{{currentTime}}</h1>
   </div>
-</header>
+</header> -->
 <div class="container">
   <div class="row">
     <div class="col-lg-12 text-center">
-        <div class="row"">
-            <div class="medication-summary" style="text-align: left">
-              <h3>Summary</h3>
-              <p>Total: {{ meds.length }}</p>
-              <p>Completed: {{ meds.length }}</p>
-              <p>Remaining: {{ meds.length }}</p>
-              <p>Missed: {{ meds.length }}</p>
+      <div class="top row">
+        <div class="col-lg-6 medication-summary">
+          <div class="content">
+            <h3 class="heading">Medication Summary</h3>
+            <div class="col-sm-6">
+              <p class="total-medicines light-grey font-lg"><i class="fa fa-plus-square" aria-hidden="true"></i>Total Today: {{ meds.length }}</p>
+              <p class="yellow font-lg"><i class="fa fa-clock-o" aria-hidden="true"></i>Remaining: {{ (meds | filter: { completed: false, missed: false }).length }}</p>
+              <div><ul ng-repeat="m in meds | filter:{ completed: false, missed: false } "><li class="yellow">{{ m.name }}</li></ul></div>
+              <p class="green font-lg"><i class="fa fa-check-circle" aria-hidden="true"></i>Completed: {{ (meds | filter: {completed: true}).length }}</p>
+              <div><ul ng-repeat="m in meds | filter:{ completed: true } "><li class="green">{{ m.name }}</li></ul></div>
             </div>
-            <div class="col-lg-6 meds-missed">
-              <!-- Area for missed medication -->
-              <h2>Missed Medications</h2>
-              <div ng-repeat="m in meds | orderBy:'-time' | filter: { missed: true }" >
-                <h4>{{ m.time | formatTime:twentyFour }}</h4>
-                <p>{{ m.time | getDate }}</p>
-                <p>{{m.name}}</p>
-                <p>{{m.dosage}}</p>
-                <button ng-show="m.openTimeWindow">Completed</button>
-                <br /><br />
-              </div>
+            <div class="col-sm-6">
+              <p class="red font-lg"><i class="fa fa-times-circle" aria-hidden="true"></i>Missed: {{ (meds | filter: { completed: false, missed: true }).length }}</p>
+              <div><ul ng-repeat="m in meds | filter:{ completed: false, missed: true } "><li class="red">{{ m.name }}</li></ul></div>
             </div>
-            <div class="col-lg-6 meds-complete">
-               <h2>Completed Medications</h2>
-               <!-- List all completed medications -->
-               <div ng-repeat="m in meds | orderBy:'-time' | filter:{ completed:true }" >
-                <h4>{{ m.time | formatTime:twentyFour }}</h4>
-                <p>{{ m.time | getDate }}</p>
-                <p>{{m.name}}</p>
-                <p>{{m.dosage}}</p>
-                <button ng-show="m.openTimeWindow">Completed</button>
-                <br /><br />
-              </div>
-              <h2>Remaining Medications</h2>
-              <!-- List all future medications -->
-              <div ng-repeat="m in meds | orderBy:'-time' | filter:{ completed:false, missed: false }" >
-                <h4>{{ m.time | formatTime:twentyFour }}</h4>
-                <p>{{ m.time | getDate }}</p>
-                <p>{{m.name}}</p>
-                <p>{{m.dosage}}</p>
-                <button ng-show="m.openTimeWindow">Completed</button>
-                <br /><br />
-              </div>
-            </div>   
+          </div>
         </div>
-        <label class="switch">
-          <input ng-click='toggleFormat()' type="checkbox">
-          <div class="slider round"></div>
-        </label>
+        <div class="col-lg-6 calendar-container"> 
+          <h3 class="calendar-title">{{ currentTime }}</h3>
+          <div class="col-lg-12" id='calendar'></div> 
+        </div>
+      </div>
+      <!--                               -->
+      <!-- This is where the switch goes =================================================-->
+      <!--                               -->
+      <label class="row switch">
+        <p class="note">24-Hr</p>
+        <input ng-click='toggleFormat()' type="checkbox">
+        <div class="slider round"></div>
+      </label>
+      <!-- ============================================================================== -->
+      <div class="row"">
+        <div class="col-lg-6 meds-missed">
+          <!-- Area for missed medication -->
+          <h2 class="heading redh">Missed Medications</h2>
+          <div class="row med-card redb" ng-repeat="m in meds | orderBy:'-time' | filter: { missed: true, completed: false }" >
+            <div class="med-time col-xs-6">
+              <h4><i class="fa fa-times-circle" aria-hidden="true"></i>{{ m.time | formatTime:twentyFour }}</h4>
+            </div>
+            <div class="col-xs-6">
+              <p>{{ m.time | getDate }}</p>
+              <p>{{m.name}}</p>
+              <p>{{m.dosage}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="meds-remaining">
+            <!-- List all remaining medicaitons =============================================================-->
+            <h2 class="heading yellowh">Remaining Medications</h2>
+            <!-- List all medications that should be taken now -->
+            <div class="row med-card yellowb" ng-repeat="m in meds | orderBy:'time' | filter:{ completed:false, missed: false, openTimeWindow: true}" >
+              <div class="med-time col-xs-6">
+                <h4><i class="fa fa-exclamation-circle" aria-hidden="true"></i>{{ m.time | formatTime:twentyFour }}</h4>
+              </div>
+              <div class="col-xs-6">
+                <p>{{ m.time | getDate }}</p>
+                <p>{{m.name}}</p>
+                <p>{{m.dosage}}</p>
+                <button class="complete-button yellowb" ng-show="m.openTimeWindow" ng-click="setMedToComplete()" ng-bind-html="m.buttonContent || 'Complete' "></button>
+              </div>
+              <audio  id="{{m._id}}" class="notification" data-second-src="../../assets/audio/alarm2.mp3" src="../../assets/audio/alarm.mp3" autoplay></audio>
+            </div>
+            <!-- List all future medications ====================================================================-->
+            <div class="row med-card yellowb" ng-repeat="m in meds | orderBy:'time' | filter:{ completed:false, missed: false, openTimeWindow: false}" >
+              <div class="med-time col-xs-6">
+               <h4><i class="fa fa-clock-o" aria-hidden="true"></i>{{ m.time | formatTime:twentyFour }}</h4>
+              </div>
+              <div class="col-xs-6">
+                <p>{{ m.time | getDate }}</p>
+                <p>{{m.name}}</p>
+                <p>{{m.dosage}}</p>
+                <button class="complete-button greyb" ng-click="#">{{ getRemainingTime() }}</button>
+              </div>
+            </div>
+          </div>
+          <!-- List all completed medications ===================================================================-->
+          <div class="meds-complete">
+            <h2 class="heading greenh">Completed Medications</h2>
+             <div class="med-card greenb" ng-repeat="m in meds | orderBy:'-time' | filter:{ completed:true }" >
+              <div class="med-time col-xs-6">
+               <h4><i class="fa fa-check-circle" aria-hidden="true"></i>{{ m.time | formatTime:twentyFour }}</h4>
+              </div>
+              <div class="col-xs-6">
+                <p>{{ m.time | getDate }}</p>
+                <p>{{m.name}}</p>
+                <p>{{m.dosage}}</p>
+                <button class="complete-button greenb" ng-show="m.openTimeWindow" ng-click="setMedToComplete()" ng-bind-html="m.buttonContent || 'Complete' "></button>
+              </div>  
+            </div>
+          </div>
+        </div>   
+      </div>
     </div>
   </div>
 </div>

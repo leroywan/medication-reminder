@@ -13,13 +13,13 @@ q(Medication.findOne({}).exec()).then(function (med) {
     var currentDate = moment().startOf('day'),
         numMeds,
         i;
-        
+
     Medication.remove({ }, function(err, result) {if (err) throw err});
     Medication.create({
-        name: 'New Medicine',
+        name: 'Memantine',
         dosage: 10 + ' mL',
-        time: moment().add(2, 'hours').toDate(),
-        completed: false,
+        time: moment().subtract(0.5, 'hours').toDate(),
+        completed: true,
         d: {
             c: moment().toDate()
         }
@@ -29,7 +29,7 @@ q(Medication.findOne({}).exec()).then(function (med) {
         }
     });
     Medication.create({
-        name: 'Missed Medicine',
+        name: 'donepezil (Aricept)',
         dosage: 10 + ' mL',
         time: moment().subtract(2, 'hours').toDate(),
         completed: false,
@@ -42,7 +42,7 @@ q(Medication.findOne({}).exec()).then(function (med) {
         }
     });
     Medication.create({
-        name: 'Pending Medicine',
+        name: 'Vitamin E',
         dosage: 20 + ' mL',
         time: moment().subtract(3, 'minutes').toDate(),
         completed: false,
@@ -55,7 +55,7 @@ q(Medication.findOne({}).exec()).then(function (med) {
         }
     });
     Medication.create({
-        name: 'Pending Medicine',
+        name: 'galantamine (Razadyne)',
         dosage: 20 + ' mL',
         time: moment().add(3, 'minutes').toDate(),
         completed: false,
@@ -67,8 +67,8 @@ q(Medication.findOne({}).exec()).then(function (med) {
             console.error(err);
         }
     });
-     Medication.create({
-        name: 'Completed Medicine',
+    Medication.create({
+        name: 'Pravachol (pravastatin)',
         dosage: 20 + ' mL',
         time: moment().subtract(1, 'hours').toDate(),
         completed: false,
@@ -80,6 +80,22 @@ q(Medication.findOne({}).exec()).then(function (med) {
             console.error(err);
         }
     });
+    Medication.create({
+        name: 'Crestor (rosuvastatin)',
+        dosage: 20 + ' mL',
+        time: moment().add(6, 'hours').toDate(),
+        completed: false,
+        d: {
+            c: moment().toDate()
+        }
+    }, function (err, result) {
+        if (err) {
+            console.error(err);
+        }
+    });
+
+
+
 
     // while (!med && currentDate.isBefore(moment().add(1, 'year'))) {
     //     numMeds = Math.floor((Math.random() * 24) + 1);
