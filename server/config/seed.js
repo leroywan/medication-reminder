@@ -70,7 +70,7 @@ q(Medication.findOne({}).exec()).then(function (med) {
     Medication.create({
         name: 'Pravachol (pravastatin)',
         dosage: 20 + ' mL',
-        time: moment().subtract(1, 'hours').toDate(),
+        time: moment().add(1, 'hours').toDate(),
         completed: false,
         d: {
             c: moment().toDate()
@@ -83,7 +83,7 @@ q(Medication.findOne({}).exec()).then(function (med) {
     Medication.create({
         name: 'Crestor (rosuvastatin)',
         dosage: 20 + ' mL',
-        time: moment().add(6, 'hours').toDate(),
+        time: moment().add(2, 'hours').toDate(),
         completed: false,
         d: {
             c: moment().toDate()
